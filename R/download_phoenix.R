@@ -15,28 +15,22 @@
 #'
 #' @rdname download_phoenix
 
+
 # get all the URLs on a page
-get_links <- function(phoenix_version){
-  library(rvest) # I know...not best practices...
-  version_nodots <- gsub(".", "", phoenix_version, fixed=TRUE)
-  page_url <- paste0("http://phoenixdata.org/data/", version_nodots)
-  data_page <- rvest::html(page_url)
-  # Access the Phoenix API. http://xkcd.com/1481/
-  page <- data_page %>%
-    html_node("tbody") %>%
-    html_text
+get_links <- function (version = 'current') {
+  require(XML)
+  url <- paste0('http://phoenixdata.org/data/', version)
+  page <- htmlParse(url)
+  all_links <- as.vector(xpathSApply(page, "//a/@href")) # xpath to extract strings
+  links = all_links[grepl('zip$', all_links)] # only links ending with "zip"
   
-  page <- unlist(stringr::str_split(page, " "))
-  page <- stringr::str_trim(page)
-  
-  links <- gsub("\\d{4}\\-\\d{2}\\-\\d{2}$", "", page)
-  links <- links[links != ""]
   return(links)
 }
 
-# given a list of links, download them and write to specified directory
-dw_file <- function(link, destpath, phoenix_version){
-  version_nodots <- gsub(".", "", phoenix_version, fixed=TRUE)
+# given a link, download the file and write it to the specified directory
+dw_file <- function(link, destpath, phoenix_version) {
+  version_nodots <- gsub(".", "", phoenix_version, fixed=T)
+  'v'
   baseurl <- paste0("https://s3.amazonaws.com/oeda/data/", version_nodots, "/")
   filename <- gsub(baseurl, "", link)
   filename <- paste0(destpath, filename)
