@@ -18,8 +18,6 @@
 
 # get all the URLs on a page
 get_links <- function (v = 'current') {
-  require(XML) # to parse HTML
-  
   v <- gsub('.', '', v, fixed = T) # remove dots
   
   # check version user input, either 'current' or up to 3 digits
@@ -31,8 +29,8 @@ get_links <- function (v = 'current') {
   }
   
   url <- paste0('http://phoenixdata.org/data/', v)
-  page <- htmlParse(url)
-  all_links <- as.vector(xpathSApply(page, "//a/@href")) # xpath to extract url strings
+  page <- XML::htmlParse(url)
+  all_links <- as.vector(XML::xpathSApply(page, "//a/@href")) # xpath to extract url strings
   links <- all_links[grepl('zip$', all_links)] # only links ending with "zip"
   
   return(links)
