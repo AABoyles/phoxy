@@ -43,7 +43,7 @@ dw_file <- function(link, destpath) {
   m <- regexpr('[^/]*(?=\\.zip$)', link, perl = T)
   filename <- regmatches(link, m)
   
-  # add trailing '/' to destpath if it's not there
+  # add trailing filepath separator to destpath if it's not there
   if (!grepl(paste0(.Platform$file.sep, '$'), destpath))
     destpath <- paste0(destpath, .Platform$file.sep)
   
