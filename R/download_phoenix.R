@@ -4,7 +4,7 @@
 #' Phoenix data website into a given directory.
 #'
 #' @param destpath The path to the directory where Phoenix should go.
-#' @param phoenix_version. Download a specific version of Phoenix ("v0.1.0" or "current").
+#' @param v. Download a specific version of Phoenix ("v0.1.0" or the current version by default).
 #'
 #' @return NULL
 #' @author Andy Halterman
@@ -20,54 +20,44 @@
 get_links <- function (v = 'current') {
   require(XML) # to parse HTML
   
-  v <- gsub('.', '', v, fixed=T) # remove dots
+  v <- gsub('.', '', v, fixed = T) # remove dots
   
   # check version user input, either 'current' or up to 3 digits
-  # with option 'v' in the beginning
+  # with optional 'v' in the beginning
   if (!grepl('(current|v?\\d{,3})', v)) stop('Incorrect version name.')
   
-  if (!grepl('^(v|current)', v)) { # if the user submitted version without 'v'
+  if (!grepl('^(v|current)', v)) { # if the user submitted a version without 'v'
     v <- paste0('v', v)
   }
   
   url <- paste0('http://phoenixdata.org/data/', v)
   page <- htmlParse(url)
-  all_links <- as.vector(xpathSApply(page, "//a/@href")) # xpath to extract strings
-  links = all_links[grepl('zip$', all_links)] # only links ending with "zip"
+  all_links <- as.vector(xpathSApply(page, "//a/@href")) # xpath to extract url strings
+  links <- all_links[grepl('zip$', all_links)] # only links ending with "zip"
   
   return(links)
 }
 
-get_links()
-
 # given a link, download the file and write it to the specified directory
 dw_file <- function(link, destpath) {
-  version_nodots <- gsub(".", "", phoenix_version, fixed=T)
-  'v'
-  baseurl <- paste0("https://s3.amazonaws.com/oeda/data/", version_nodots, "/")
-  filename <- gsub(baseurl, "", link)
-  filename <- paste0(destpath, filename)
-  bin <- getBinaryURL(link, ssl.verifypeer=FALSE)
-  con <- file(filename, open = "wb")
-  writeBin(bin, con)
-  close(con)
-  unzip(filename, exdir = destpath, unzip = "internal", setTimes = FALSE)
-  unlink(filename)
+  # extract filename from link
+  m <- regexpr('events\\.full\\.\\d{8}\\.txt', link)
+  filename <- regmatches(link, m)
+  
+  # add trailing '/' to destpath if it's not there
+  if (!grepl('/$', destpath)) destpath <- paste0(destpath, '/')
+  
+  # download and unzip to destpath
+  temp <- tempfile()
+  download.file(link, temp, method = 'curl', quiet = T)
+  unzip(temp, exdir = destpath)
+  unlink(temp)
 }
 
 #' @export
 #' @importFrom plyr l_ply progress_text
-download_phoenix <- function(destpath, phoenix_version = "current"){
-  library(RCurl)
-  if (stringr::str_sub(destpath, -1) != "/"){
-    stop("Destination paths need to have trailing forward slashes")
-  }
-  ll <- get_links(phoenix_version = phoenix_version)
+download_phoenix <- function(destpath, v = 'current'){
+  links <- get_links(v = v)
   message("Downloading and unzipping files.")
-  plyr::l_ply(ll, dw_file, phoenix_version = phoenix_version, destpath = destpath, .progress = plyr::progress_text(char = '='))
+  plyr::l_ply(links, dw_file, destpath = destpath, .progress = plyr::progress_text(char = '='))
 }
-
-
-
-
-
