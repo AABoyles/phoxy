@@ -17,9 +17,20 @@
 
 
 # get all the URLs on a page
-get_links <- function (version = 'current') {
-  require(XML)
-  url <- paste0('http://phoenixdata.org/data/', version)
+get_links <- function (v = 'current') {
+  require(XML) # to parse HTML
+  
+  v <- gsub('.', '', v, fixed=T) # remove dots
+  
+  # check version user input, either 'current' or up to 3 digits
+  # with option 'v' in the beginning
+  if (!grepl('(current|v?\\d{,3})', v)) stop('Incorrect version name.')
+  
+  if (!grepl('^(v|current)', v)) { # if the user submitted version without 'v'
+    v <- paste0('v', v)
+  }
+  
+  url <- paste0('http://phoenixdata.org/data/', v)
   page <- htmlParse(url)
   all_links <- as.vector(xpathSApply(page, "//a/@href")) # xpath to extract strings
   links = all_links[grepl('zip$', all_links)] # only links ending with "zip"
@@ -27,8 +38,10 @@ get_links <- function (version = 'current') {
   return(links)
 }
 
+get_links()
+
 # given a link, download the file and write it to the specified directory
-dw_file <- function(link, destpath, phoenix_version) {
+dw_file <- function(link, destpath) {
   version_nodots <- gsub(".", "", phoenix_version, fixed=T)
   'v'
   baseurl <- paste0("https://s3.amazonaws.com/oeda/data/", version_nodots, "/")
