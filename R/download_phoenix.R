@@ -4,7 +4,7 @@
 #' Phoenix data website into a given directory.
 #'
 #' @param destpath The path to the directory where Phoenix should go.
-#' @param v. Download a specific version of Phoenix ("v0.1.0" or the current version by default).
+#' @param phoenix_version. Download a specific version of Phoenix ("v0.1.0" or the current version by default).
 #'
 #' @return NULL
 #' @author Andy Halterman
@@ -17,18 +17,18 @@
 
 
 # get all the URLs on a page
-get_links <- function (v = 'current') {
-  v <- gsub('.', '', v, fixed = T) # remove dots
+get_links <- function (phoenix_version = 'current') {
+  v <- gsub('.', '', phoenix_version, fixed = T) # remove dots
   
   # check version user input, either 'current' or up to 3 digits
   # with optional 'v' in the beginning
-  if (!grepl('(current|v?\\d{,3})', v)) stop('Incorrect version name.')
+  if (!grepl('(current|v?\\d{,3})', phoenix_version)) stop('Incorrect version name.')
   
-  if (!grepl('^(v|current)', v)) { # if the user submitted a version without 'v'
-    v <- paste0('v', v)
+  if (!grepl('^(v|current)', phoenix_version)) { # if the user submitted a version without 'v'
+    phoenix_version <- paste0('v', phoenix_version)
   }
   
-  url <- paste0('http://phoenixdata.org/data/', v)
+  url <- paste0('http://phoenixdata.org/data/', phoenix_version)
   page <- XML::htmlParse(url)
   all_links <- as.vector(XML::xpathSApply(page, "//a/@href")) # xpath to extract url strings
   links <- all_links[grepl('zip$', all_links)] # only links ending with "zip"
@@ -54,8 +54,8 @@ dw_file <- function(link, destpath) {
 
 #' @export
 #' @importFrom plyr l_ply progress_text
-download_phoenix <- function(destpath, v = 'current'){
-  links <- get_links(v = v)
+download_phoenix <- function(destpath, phoenix_version = 'current'){
+  links <- get_links(phoenix_version = phoenix_version)
   message("Downloading and unzipping files.")
   plyr::l_ply(links, dw_file, destpath = destpath, .progress = plyr::progress_text(char = '='))
 }
