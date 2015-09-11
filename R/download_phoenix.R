@@ -44,7 +44,8 @@ dw_file <- function(link, destpath) {
   filename <- regmatches(link, m)
   
   # add trailing '/' to destpath if it's not there
-  if (!grepl('/$', destpath)) destpath <- paste0(destpath, '/')
+  if (!grepl(paste0(.Platform$file.sep, '$'), destpath))
+    destpath <- paste0(destpath, .Platform$file.sep)
   
   # download and unzip to destpath
   temp <- tempfile()
