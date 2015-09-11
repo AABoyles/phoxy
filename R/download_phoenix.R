@@ -28,6 +28,7 @@ get_links <- function (phoenix_version = 'current') {
     phoenix_version <- paste0('v', phoenix_version)
   }
   
+  # Access the Phoenix API. http://xkcd.com/1481/
   url <- paste0('http://phoenixdata.org/data/', phoenix_version)
   page <- XML::htmlParse(url)
   all_links <- as.vector(XML::xpathSApply(page, "//a/@href")) # xpath to extract url strings
