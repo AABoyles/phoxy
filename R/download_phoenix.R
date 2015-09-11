@@ -39,7 +39,7 @@ get_links <- function (phoenix_version = 'current') {
 # given a link, download the file and write it to the specified directory
 dw_file <- function(link, destpath) {
   # extract filename from link
-  m <- regexpr('events\\.full\\.\\d{8}\\.txt', link)
+  m <- regexpr('[^/]*(?=\\.zip$)', link, perl = T)
   filename <- regmatches(link, m)
   
   # add trailing '/' to destpath if it's not there
