@@ -15,7 +15,7 @@
 #' 
 #' @rdname ingest_icews
 #' @export
-ingest_icews <- function(dir, read_func = "read.csv", processing_function){  
+ingest_icews <- function(dir){  
   # Handle messy file paths
   lastletter <- stringr::str_sub(dir ,-1, -1)
   if (lastletter != "/"){
@@ -25,40 +25,18 @@ ingest_icews <- function(dir, read_func = "read.csv", processing_function){
   files <- list.files(dir)
   files <- files[grep("\\.tab$", files)] # quick regex in case of zips still there
   files <- paste0(dir, files)
-  # I would set the col classes here, but was causing errors. Done later, which is slower but stable.
-  eventColClasses <- c(rep("character", 20))
-  # A reading function with some error catching and some logic for handling custom reading functions
-  if (read_func == "read.csv") {
-    read_one <- function(file){
-      t <- tryCatch(read.csv(file, stringsAsFactors=FALSE, header=FALSE, 
-                         sep="\t", quote = "", colClasses=eventColClasses), 
-                    error=function(e) message(paste0("error reading ", file)))
-      
-      if(class(t)[1] == "data.frame" & is.null(t) == FALSE){
-            return(t)
-      } else{
-        message("object is not a dataframe")
-      }
-    }
-  } else if (read_func == "readr") {
-    read_one <- function(file){
-      print(file)
-      t <- tryCatch(readr::read_tsv(file, progress = FALSE), 
-                    error=function(e) message(paste0("error reading ", file)))
-      if ("data.frame" %in% class(t) & is.null(t) == FALSE){
-        old_names <- names(t)
-        new_names <- gsub(" ", ".", old_names, fixed = TRUE)
-        names(t) <- new_names
-        return(t)
-      } else{
-        message(class(t))
-        message("object is not a dataframe")
-      }
-    }
-  } else {
-   print("Not a recognized reading function. Function must be either `read.csv` or `readr`") 
-  }
   
+  # Quick and dirty: fread all files
+  read_one <- function(file){
+    t <- tryCatch(fread(file, stringsAsFactors = F, sep = 't', quote = '')
+                        , error = function(e) message(paste0('error reading ', file)))
+    if(class(t)[1] == 'data.frame' & is.null(t) == F){
+      return(t)
+    } else {
+      message('object is not a data.frame')
+    }
+  }
+    
   message("Reading in files...")
   event_list  <- plyr::llply(files, read_one, .progress = plyr::progress_text(char = '='))
   # bind everything together. Surpress this warning: "Unequal factor levels: coercing to character"
