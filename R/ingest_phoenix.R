@@ -26,11 +26,12 @@ ingest_phoenix <- function(dir, phoenix_version = "auto", read_func = "read.csv"
   files <- list.files(dir)
   files <- paste0(dir, files)
 
-  # Quick and dirty: fread all files
+  ## Quick and dirty: fread all files
   read_one <- function(file){
-    t <- tryCatch(fread(file, stringsAsFactors = F, sep = '\t')
+    t <- tryCatch(fread(file, stringsAsFactors = F, sep = '\t'
+                        , colClasses = coltypes, na.strings = '')
                   , error = function(e) message(paste0('error reading ', file)))
-    if(class(t)[1] == 'data.frame' & is.null(t) == F){
+    if(is.null(t) == F){
       return(t)
     } else {
       message('object is not a data.frame')
@@ -39,15 +40,16 @@ ingest_phoenix <- function(dir, phoenix_version = "auto", read_func = "read.csv"
   
   message("Reading in files...")
   event_list  <- plyr::llply(files, read_one, .progress = plyr::progress_text(char = '='))
-  # bind everything together. Surpress this warning: "Unequal factor levels: coercing to character"
-  events <- dplyr::bind_rows(event_list)
-  names(events) <- c("EventID", "Date", "Year", "Month", "Day", "SourceActorFull", 
+  
+  # Bind everything together
+  events <- rbindlist(event_list)
+  setnames(events, c("EventID", "Date", "Year", "Month", "Day", "SourceActorFull", 
                      "SourceActorEntity", "SourceActorRole", "SourceActorAttribute", 
                      "TargetActorFull", "TargetActorEntity", "TargetActorRole", 
                      "TargetActorAttribute", "EventCode", "EventRootCode", "PentaClass", 
                      "GoldsteinScore", "Issues", "Lat", "Lon", 
                      "LocationName", "StateName", "CountryCode", "SentenceID", "URLs", 
-                     "NewsSources")
+                     "NewsSources"))
   events$Date <- as.Date(lubridate::ymd(events$Date))  # use lubridate, then de-POSIX the date.
   events$Year <- as.integer(events$Year)
   events$Month <- as.integer(events$Month)
@@ -55,8 +57,8 @@ ingest_phoenix <- function(dir, phoenix_version = "auto", read_func = "read.csv"
   events$GoldsteinScore <- as.numeric(events$GoldsteinScore)
   events$Lat <- as.numeric(events$Lat)
   events$Lon <- as.numeric(events$Lon)
-  eventColClasses <- c(rep("integer", 5), rep("character", 11), "numeric", "character", "numeric", 
-                       "numeric", rep("character", 6))
+#   eventColClasses <- c(rep("integer", 5), rep("character", 11), "numeric", "character", "numeric", 
+#                        "numeric", rep("character", 6))
   message("Process complete")
   return(events)
 }
