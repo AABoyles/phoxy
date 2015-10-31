@@ -28,11 +28,7 @@ ingest_icews <- function(dir){
   
   # Quick and dirty: fread all files
   read_one <- function(file){
-<<<<<<< HEAD
     t <- tryCatch(fread(file, stringsAsFactors = F, sep = '\t')
-=======
-    t <- tryCatch(fread(file, stringsAsFactors = F, sep = 't', quote = '')
->>>>>>> 4bc97617b630044eb6947c308fc650de8081989c
                         , error = function(e) message(paste0('error reading ', file)))
     if(class(t)[1] == 'data.frame' & is.null(t) == F){
       return(t)
