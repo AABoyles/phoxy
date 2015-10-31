@@ -31,7 +31,7 @@ update_phoenix <- function(destpath, phoenix_version = "current"){
   ll <- paste0("https://s3.amazonaws.com/oeda/data/", version_nodots, "/", new_files$V1, ".zip")
   
   message("Downloading and unzipping files.")
-  plyr::l_ply(ll, phoxy:::dw_file, destpath = destpath, phoenix_version = phoenix_version, .progress = plyr::progress_text(char = '='))
+  plyr::l_ply(ll, phoxy:::dw_file, destpath = destpath, .progress = plyr::progress_text(char = '='))
 }
 
 
