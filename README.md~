@@ -1,8 +1,6 @@
 phoxy
 =====
 
-MODIFIED VERSION: Changed a few arguments on the download functions.
-
 Download, ingest, and analyze the Phoenix and ICEWS event datasets.
 
 The Phoenix event data set records social and political events
