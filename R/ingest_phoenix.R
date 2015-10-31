@@ -25,21 +25,17 @@ ingest_phoenix <- function(dir, phoenix_version = "auto", read_func = "read.csv"
   
   files <- list.files(dir)
   files <- paste0(dir, files)
-  # I would set the col classes here, but was causing errors. Done later, which is slower but stable.
-  eventColClasses <- c(rep("character", 26))
-  # A reading function with some error catching.
+
+  # Quick and dirty: fread all files
   read_one <- function(file){
-    t <- tryCatch(read.csv(file, stringsAsFactors=FALSE, header=FALSE, 
-                       sep="\t", quote = "", colClasses=eventColClasses), 
-                  error=function(e) message(paste0("error reading ", file)))
-    
-    if(class(t)[1] == "data.frame" & is.null(t) == FALSE){
-          return(t)
+    t <- tryCatch(fread(file, stringsAsFactors = F, sep = '\t')
+                  , error = function(e) message(paste0('error reading ', file)))
+    if(class(t)[1] == 'data.frame' & is.null(t) == F){
+      return(t)
+    } else {
+      message('object is not a data.frame')
     }
-    else{
-      message("object is not a dataframe")
-    }
-    }
+  }
   
   message("Reading in files...")
   event_list  <- plyr::llply(files, read_one, .progress = plyr::progress_text(char = '='))
