@@ -73,7 +73,7 @@ ingest_phoenix <- function(dir, start_date, end_date){
   events <- rbindlist(event_list)
   
   ## Convert dates to DATE object
-  events$date <- as.Date(lubridate::ymd(events$date))  # use lubridate, then de-POSIX the date.
+#   events$date <- as.Date(lubridate::ymd(events$date))  # use lubridate, then de-POSIX the date.
 
   message("Process complete")
   message(names(events))
