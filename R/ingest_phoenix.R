@@ -62,13 +62,13 @@ ingest_phoenix <- function(dir, start_date, end_date){
 
   # Bind everything together
   events <- rbindlist(event_list)
-  data.table::setnames(events, c("event_id", "date", "Year", "Month", "Day", "SourceActorFull",
+  names(events) <- c("event_id", "date", "Year", "Month", "Day", "SourceActorFull",
                      "sourceactorentity", "SourceActorRole", "SourceActorAttribute",
                      "TargetActorFull", "targetactorentity", "TargetActorRole",
                      "TargetActorAttribute", "eventcode", "rootcode", "pentaclass",
                      "GoldsteinScore", "Issues", "Lat", "Lon",
                      "LocationName", "StateName", "CountryCode", "SentenceID", "URLs",
-                     "NewsSources"))
+                     "NewsSources")
   events$date <- as.Date(lubridate::ymd(events$date))  # use lubridate, then de-POSIX the date.
 
   message("Process complete")

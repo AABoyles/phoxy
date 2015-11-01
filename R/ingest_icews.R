@@ -65,11 +65,11 @@ ingest_icews <- function(dir, start_date, end_date){
   events <- rbindlist(event_list)
 
   # Set names
-  setnames(events, c("event_id", "date", "Source.Name", "Source.Sectors",
+  names(events) <- c("event_id", "date", "Source.Name", "Source.Sectors",
                      "Source.Country", "Event.Text", "eventcode", "Intensity", "Target.Name",
                      "Target.Sectors", "Target.Country", "Story.ID", "Sentence.Number",
                      "Publisher", "City", "District", "Province", "Country", "Latitude",
-                     "Longitude"))
+                     "Longitude")
   # Use lubridate, then de-POSIX the date.
   events$date <- as.Date(lubridate::ymd(events$date))
   #eventColClasses <- c(rep("integer", 5), rep("character", 11), "numeric", "character", "numeric",
