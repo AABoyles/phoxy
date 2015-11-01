@@ -43,12 +43,21 @@ ingest_phoenix <- function(dir, start_date, end_date){
   coltypes <- c('character', rep('integer', 4), rep('character', 9)
                 , rep('integer', 2),  'numeric', 'character', 'numeric'
                 , 'numeric', rep('character', 6))
-
+  ## Set column name
+  phoenix_names <- c("event_id", "date", "Year", "Month", "Day", "SourceActorFull",
+                     "sourceactorentity", "SourceActorRole", "SourceActorAttribute",
+                     "TargetActorFull", "targetactorentity", "TargetActorRole",
+                     "TargetActorAttribute", "eventcode", "rootcode", "pentaclass",
+                     "GoldsteinScore", "Issues", "Lat", "Lon",
+                     "LocationName", "StateName", "CountryCode", "SentenceID", "URLs",
+                     "NewsSources")
+  
   ## Quick and dirty: fread all files
   read_one <- function(file){
     t <- tryCatch(fread(file, stringsAsFactors = F, sep = '\t'
                         , colClasses = coltypes
-                        , na.strings = '')
+                        , na.strings = ''
+                        , col.names = phoenix_names)
                   , error = function(e) message(paste0('error reading ', file)))
     if(is.null(t) == F){
       return(t)
@@ -60,16 +69,11 @@ ingest_phoenix <- function(dir, start_date, end_date){
   message("Reading in files...")
   event_list  <- plyr::llply(files, read_one, .progress = plyr::progress_text(char = '='))
 
-  # Bind everything together
+  ## Bind everything together
   events <- rbindlist(event_list)
-#   names(events) <- c("event_id", "date", "Year", "Month", "Day", "SourceActorFull",
-#                      "sourceactorentity", "SourceActorRole", "SourceActorAttribute",
-#                      "TargetActorFull", "targetactorentity", "TargetActorRole",
-#                      "TargetActorAttribute", "eventcode", "rootcode", "pentaclass",
-#                      "GoldsteinScore", "Issues", "Lat", "Lon",
-#                      "LocationName", "StateName", "CountryCode", "SentenceID", "URLs",
-#                      "NewsSources")
-#   events$date <- as.Date(lubridate::ymd(events$date))  # use lubridate, then de-POSIX the date.
+  
+  ## Convert dates to DATE object
+  events$date <- as.Date(lubridate::ymd(events$date))  # use lubridate, then de-POSIX the date.
 
   message("Process complete")
   return(events)
