@@ -22,10 +22,16 @@ ingest_phoenix <- function(dir, phoenix_version = "auto", read_func = "read.csv"
   if (lastletter != "/"){
     dir <- paste0(dir, "/")
   }
-
+  
+  ## List files
   files <- list.files(dir)
   files <- paste0(dir, files)
 
+  ## Set column dtypes
+  coltypes <- c('character', rep('integer', 4), rep('character', 8)
+                , rep('integer', 3),  'numeric', 'character', 'numeric'
+                , 'numeric', rep('character', 6))
+  
   ## Quick and dirty: fread all files
   read_one <- function(file){
     t <- tryCatch(fread(file, stringsAsFactors = F, sep = '\t'
