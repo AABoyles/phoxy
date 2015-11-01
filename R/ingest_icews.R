@@ -4,8 +4,8 @@
 #' them all in, name them correctly, and combine them into one dataframe.
 #'
 #' @param dir The path to the ICEWS folder.
-#' @param startdate Start of date range as YYYYMMDD integer format.
-#' @param enddate End of date range as YYYYMMDD integer format.
+#' @param start_date Start of date range as YYYYMMDD integer format.
+#' @param end_date End of date range as YYYYMMDD integer format.
 #'
 #' @return A single dataframe with all the ICEWS events in the folder.
 #' @author Andy Halterman, forked by Jesse Hammond
@@ -17,7 +17,7 @@
 #' @rdname ingest_icews
 #' @export
 
-ingest_icews <- function(dir, startdate, enddate){
+ingest_icews <- function(dir, start_date, end_date){
   # Handle messy file paths
   lastletter <- stringr::str_sub(dir ,-1, -1)
   if (lastletter != "/"){
@@ -31,8 +31,8 @@ ingest_icews <- function(dir, startdate, enddate){
   files <- files[grep("\\.tab$", files)]
 
   ## Pull files that fall in the date range provided
-  startyear <- as.integer(substr(startdate, 1, 4))
-  endyear <- as.integer(substr(enddate, 1, 4))
+  startyear <- as.integer(substr(start_date, 1, 4))
+  endyear <- as.integer(substr(end_date, 1, 4))
   filesyears <- as.integer(
     do.call('rbind', (stringr::str_split(files, '\\.')))[, 2])
   if(endyear > max(filesyears)){

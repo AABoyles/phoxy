@@ -4,8 +4,8 @@
 #' them all in, name them correctly, and combine them into one dataframe.
 #'
 #' @param dir The path to the Phoenix folder.
-#' @param startdate Start of date range as YYYYMMDD integer format.
-#' @param enddate End of date range as YYYYMMDD integer format.
+#' @param start_date Start of date range as YYYYMMDD integer format.
+#' @param end_date End of date range as YYYYMMDD integer format.
 #'
 #' @return A single dataframe with all the Phoenix events in the folder.
 #' @author Andy Halterman, forked by Jesse Hammond
@@ -17,7 +17,7 @@
 #' @rdname ingest_phoenix
 #' @export
 
-ingest_phoenix <- function(dir, startdate, enddate){
+ingest_phoenix <- function(dir, start_date, end_date){
   # Handle messy file paths
   lastletter <- stringr::str_sub(dir ,-1, -1)
   if (lastletter != "/"){
@@ -30,13 +30,13 @@ ingest_phoenix <- function(dir, startdate, enddate){
   ## Pull files that fall in the date range provided
   filesdates <- as.integer(
     do.call('rbind', (stringr::str_split(files, '\\.')))[, 3])
-  if(startdate < min(filesdates)){
+  if(start_date < min(filesdates)){
     message('Note: specified range precedes the earliest Phoenix data.')
   }
-  if(enddate > max(filesdates)){
+  if(end_date > max(filesdates)){
     message('Note: specified range exceeds the latest Phoenix data. IT\'S NOT A CRYSTAL BALL PEOPLE')
   }
-  files <- files[filesdates >= startdate & filesdates <= enddate]
+  files <- files[filesdates >= start_date & filesdates <= end_date]
   files <- paste0(dir, files)
   message(files)
 
