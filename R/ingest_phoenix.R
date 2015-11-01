@@ -62,7 +62,7 @@ ingest_phoenix <- function(dir, start_date, end_date){
 
   # Bind everything together
   events <- rbindlist(event_list)
-  setnames(events, c("event_id", "date", "Year", "Month", "Day", "SourceActorFull",
+  data.table::setnames(events, c("event_id", "date", "Year", "Month", "Day", "SourceActorFull",
                      "sourceactorentity", "SourceActorRole", "SourceActorAttribute",
                      "TargetActorFull", "targetactorentity", "TargetActorRole",
                      "TargetActorAttribute", "eventcode", "rootcode", "pentaclass",
