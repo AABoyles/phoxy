@@ -41,10 +41,6 @@ ingest_phoenix <- function(phoenix_loc, start_date, end_date){
   files <- files[filesdates >= start_date & filesdates <= end_date]
   files <- paste0(phoenix_loc, files)
   
-  message(files)
-  message(class(start_date))
-  message(end_date)
-
   ## Set column dtypes
   coltypes <- c('character', rep('integer', 4), rep('character', 9)
                 , rep('integer', 2),  'numeric', 'character', 'numeric'
@@ -79,10 +75,8 @@ ingest_phoenix <- function(phoenix_loc, start_date, end_date){
   events <- data.table::rbindlist(event_list)
   
   ## Convert dates to DATE object
-#   events$date <- as.Date(lubridate::ymd(events$date))  # use lubridate, then de-POSIX the date.
-
+  events$date <- as.Date(lubridate::ymd(events$date))  # use lubridate, then de-POSIX the date.
   message("Process complete")
-  print(head(event_list[[1]]))
   return(events)
 }
 

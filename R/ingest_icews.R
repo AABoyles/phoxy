@@ -70,10 +70,10 @@ ingest_icews <- function(dir, start_date, end_date){
                      "Target.Sectors", "Target.Country", "Story.ID", "Sentence.Number",
                      "Publisher", "City", "District", "Province", "Country", "Latitude",
                      "Longitude")
+  
   # Use lubridate, then de-POSIX the date.
   events$date <- as.Date(lubridate::ymd(events$date))
-  #eventColClasses <- c(rep("integer", 5), rep("character", 11), "numeric", "character", "numeric",
-  #                     "numeric", rep("character", 6))
+
   message("Process complete")
   return(events)
 }
