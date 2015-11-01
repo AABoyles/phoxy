@@ -38,7 +38,6 @@ ingest_phoenix <- function(dir, start_date, end_date){
   }
   files <- files[filesdates >= start_date & filesdates <= end_date]
   files <- paste0(dir, files)
-  message(files)
 
   ## Set column dtypes
   coltypes <- c('character', rep('integer', 4), rep('character', 9)
@@ -48,7 +47,8 @@ ingest_phoenix <- function(dir, start_date, end_date){
   ## Quick and dirty: fread all files
   read_one <- function(file){
     t <- tryCatch(fread(file, stringsAsFactors = F, sep = '\t'
-                        , colClasses = coltypes, na.strings = '')
+                        , colClasses = coltypes
+                        , na.strings = '')
                   , error = function(e) message(paste0('error reading ', file)))
     if(is.null(t) == F){
       return(t)
