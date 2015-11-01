@@ -40,19 +40,23 @@ ingest_phoenix <- function(phoenix_loc, start_date, end_date){
   }
   files <- files[filesdates >= start_date & filesdates <= end_date]
   files <- paste0(phoenix_loc, files)
+  
+  message(files)
+  message(start_date)
+  message(end_date)
 
   ## Set column dtypes
   coltypes <- c('character', rep('integer', 4), rep('character', 9)
                 , rep('integer', 2),  'numeric', 'character', 'numeric'
                 , 'numeric', rep('character', 6))
   ## Set column name
-  phoenix_names <- c("event_id", "date", "Year", "Month", "Day", "SourceActorFull",
-                     "sourceactorentity", "SourceActorRole", "SourceActorAttribute",
-                     "TargetActorFull", "targetactorentity", "TargetActorRole",
-                     "TargetActorAttribute", "eventcode", "rootcode", "pentaclass",
-                     "GoldsteinScore", "Issues", "Lat", "Lon",
-                     "LocationName", "StateName", "CountryCode", "SentenceID", "URLs",
-                     "NewsSources")
+  phoenix_names <- c('eventid', 'date', 'year', 'month', 'day'
+                     , 'sourceactorfull', 'sourceactorentity', 'sourceactorrole'
+                     , 'sourceactorattribute', 'targetactorfull', 'targetactorentity'
+                     , 'targetactorrole', 'targetactorattribute', 'eventcode'
+                     , 'rootcode', 'pentaclass', 'goldsteinscore', 'issues'
+                     , 'lat', 'long', 'locationname', 'statename', 'countrycode'
+                     , 'sentenceid', 'urls', 'newssources')
   
   ## Quick and dirty: fread all files
   read_one <- function(file){
