@@ -31,6 +31,7 @@ ingest_phoenix <- function(phoenix_loc, start_date, end_date){
   ## Pull files that fall in the date range provided
   filesdates <- as.integer(
     do.call('rbind', (stringr::str_split(files, '\\.')))[, 3])
+  filesdates <- as.Date(filesdates, format = '%Y%m%d')
   if(start_date < min(filesdates)){
     message('Note: specified range precedes the earliest Phoenix data.')
   }
