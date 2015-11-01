@@ -55,7 +55,7 @@ ingest_phoenix <- function(phoenix_loc, start_date, end_date){
   
   ## Quick and dirty: fread all files
   read_one <- function(file){
-    t <- tryCatch(fread(file, stringsAsFactors = F, sep = '\t'
+    t <- tryCatch(data.table::fread(file, stringsAsFactors = F, sep = '\t'
                         , colClasses = coltypes
                         , na.strings = ''
                         , col.names = phoenix_names)
@@ -71,7 +71,7 @@ ingest_phoenix <- function(phoenix_loc, start_date, end_date){
   event_list  <- plyr::llply(files, read_one, .progress = plyr::progress_text(char = '='))
 
   ## Bind everything together
-  events <- rbindlist(event_list)
+  events <- data.table::rbindlist(event_list)
   
   ## Convert dates to DATE object
 #   events$date <- as.Date(lubridate::ymd(events$date))  # use lubridate, then de-POSIX the date.
