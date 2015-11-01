@@ -38,7 +38,7 @@ ingest_phoenix <- function(dir, startdate, enddate){
   }
   files <- files[filesdates >= startdate & filesdates <= enddate]
   files <- paste0(dir, files)
-  print(files)
+  message(files)
 
   ## Set column dtypes
   coltypes <- c('character', rep('integer', 4), rep('character', 9)

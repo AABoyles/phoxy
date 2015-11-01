@@ -40,7 +40,7 @@ ingest_icews <- function(dir, startdate, enddate){
   }
   files <- files[filesyears >= startyear & filesyears <= endyear]
   files <- paste0(dir, files)
-  print(files)
+  message(files)
 
   ## Set column dtypes
   coltypes <- c('integer', rep('character', 5), 'integer', 'numeric'
