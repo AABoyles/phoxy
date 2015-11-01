@@ -76,7 +76,7 @@ ingest_phoenix <- function(dir, start_date, end_date){
 #   events$date <- as.Date(lubridate::ymd(events$date))  # use lubridate, then de-POSIX the date.
 
   message("Process complete")
-  print(head(events))
+  print(head(event_list[[1]]))
   return(events)
 }
 
