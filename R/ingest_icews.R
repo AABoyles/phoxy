@@ -57,7 +57,7 @@ ingest_icews <- function(dir){
                      "Publisher", "City", "District", "Province", "Country", "Latitude",
                      "Longitude"))
   # Use lubridate, then de-POSIX the date.
-  events$Event.Date <- as.Date(lubridate::ymd(events$Event.Date))
+  events$date <- as.Date(lubridate::ymd(events$date))
   #eventColClasses <- c(rep("integer", 5), rep("character", 11), "numeric", "character", "numeric",
   #                     "numeric", rep("character", 6))
   message("Process complete")
