@@ -4,18 +4,20 @@
 #' them all in, name them correctly, and combine them into one dataframe.
 #'
 #' @param dir The path to the ICEWS folder.
+#' @param startdate Start of date range as YYYYMMDD integer format.
+#' @param enddate End of date range as YYYYMMDD integer format.
 #'
 #' @return A single dataframe with all the ICEWS events in the folder.
-#' @author Andy Halterman
+#' @author Andy Halterman, forked by Jesse Hammond
 #' @note This function is still in development and may contain errors and change quickly.
 #' @examples
 #'
-#' events <- ingest_icews("~/ICEWS/study_28075/Data/")
+#' events <- ingest_icews("~/ICEWS/study_28075/Data/", 20101201, 20140101)
 #'
 #' @rdname ingest_icews
 #' @export
 
-ingest_icews <- function(dir){
+ingest_icews <- function(dir, startdate, enddate){
   # Handle messy file paths
   lastletter <- stringr::str_sub(dir ,-1, -1)
   if (lastletter != "/"){
@@ -24,8 +26,19 @@ ingest_icews <- function(dir){
 
   ## List files
   files <- list.files(dir)
-  # Quick regex in case of zips still there
+
+  ## Quick regex in case of zips still there
   files <- files[grep("\\.tab$", files)]
+
+  ## Pull files that fall in the date range provided
+  startyear <- as.integer(substr(startdate, 1, 4))
+  endyear <- as.integer(substr(enddate, 1, 4))
+  filesyears <- as.integer(
+    do.call('rbind', (stringr::str_split(files, '\\.')))[, 2])
+  if(endyear > max(filesyears)){
+    message('Note: specified range exceeds the most recent ICEWS entries.')
+  }
+  files <- files[filesyears >= startyear & filesyears <= endyear]
   files <- paste0(dir, files)
 
   ## Set column dtypes
