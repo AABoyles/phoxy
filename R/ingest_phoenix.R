@@ -28,8 +28,8 @@ ingest_phoenix <- function(dir, phoenix_version = "auto", read_func = "read.csv"
   files <- paste0(dir, files)
 
   ## Set column dtypes
-  coltypes <- c('character', rep('integer', 4), rep('character', 8)
-                , rep('integer', 3),  'numeric', 'character', 'numeric'
+  coltypes <- c('character', rep('integer', 4), rep('character', 9)
+                , rep('integer', 2),  'numeric', 'character', 'numeric'
                 , 'numeric', rep('character', 6))
   
   ## Quick and dirty: fread all files
@@ -56,13 +56,7 @@ ingest_phoenix <- function(dir, phoenix_version = "auto", read_func = "read.csv"
                      "GoldsteinScore", "Issues", "Lat", "Lon",
                      "LocationName", "StateName", "CountryCode", "SentenceID", "URLs",
                      "NewsSources"))
-  events$Date <- as.Date(lubridate::ymd(events$Date))  # use lubridate, then de-POSIX the date.
-  events$Year <- as.integer(events$Year)
-  events$Month <- as.integer(events$Month)
-  events$Day <- as.integer(events$Day)
-  events$GoldsteinScore <- as.numeric(events$GoldsteinScore)
-  events$Lat <- as.numeric(events$Lat)
-  events$Lon <- as.numeric(events$Lon)
+  events$date <- as.Date(lubridate::ymd(events$date))  # use lubridate, then de-POSIX the date.
 
   message("Process complete")
   return(events)
