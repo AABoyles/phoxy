@@ -3,7 +3,7 @@
 #' Given a directory with individual Phoenix dataset files, quickly read
 #' them all in, name them correctly, and combine them into one dataframe.
 #'
-#' @param dir The path to the Phoenix folder.
+#' @param phoenix_loc The path to the Phoenix folder.
 #' @param start_date Start of date range as YYYYMMDD integer format.
 #' @param end_date End of date range as YYYYMMDD integer format.
 #'
@@ -14,18 +14,19 @@
 #'
 #' events <- ingest_phoenix("~/OEDA/phoxy_test/", 20140620, 20150101)
 #'
+#' @import data.table
 #' @rdname ingest_phoenix
 #' @export
 
-ingest_phoenix <- function(dir, start_date, end_date){
+ingest_phoenix <- function(phoenix_loc, start_date, end_date){
   # Handle messy file paths
-  lastletter <- stringr::str_sub(dir ,-1, -1)
+  lastletter <- stringr::str_sub(phoenix_loc ,-1, -1)
   if (lastletter != "/"){
-    dir <- paste0(dir, "/")
+    phoenix_loc <- paste0(phoenix_loc, "/")
   }
 
   ## List files
-  files <- list.files(dir)
+  files <- list.files(phoenix_loc)
 
   ## Pull files that fall in the date range provided
   filesdates <- as.integer(
@@ -37,7 +38,7 @@ ingest_phoenix <- function(dir, start_date, end_date){
     message('Note: specified range exceeds the latest Phoenix data. IT\'S NOT A CRYSTAL BALL PEOPLE')
   }
   files <- files[filesdates >= start_date & filesdates <= end_date]
-  files <- paste0(dir, files)
+  files <- paste0(phoenix_loc, files)
 
   ## Set column dtypes
   coltypes <- c('character', rep('integer', 4), rep('character', 9)
