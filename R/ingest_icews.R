@@ -1,10 +1,9 @@
 #' Ingest the ICEWS Event Dataset
 #'
-#' Given a directory with individual ICEWS dataset files, quickly read 
+#' Given a directory with individual ICEWS dataset files, quickly read
 #' them all in, name them correctly, and combine them into one dataframe.
 #'
 #' @param dir The path to the ICEWS folder.
-#' @param read_func [Not yet implemented]. Use an alternative reading function like \code{data.table::fread} or \code{readr::read_delim}.
 #'
 #' @return A single dataframe with all the ICEWS events in the folder.
 #' @author Andy Halterman
@@ -12,27 +11,28 @@
 #' @examples
 #'
 #' events <- ingest_icews("~/ICEWS/study_28075/Data/")
-#' 
+#'
 #' @rdname ingest_icews
 #' @export
+
 ingest_icews <- function(dir){
   # Handle messy file paths
   lastletter <- stringr::str_sub(dir ,-1, -1)
   if (lastletter != "/"){
     dir <- paste0(dir, "/")
   }
-  
+
   ## List files
   files <- list.files(dir)
   # Quick regex in case of zips still there
   files <- files[grep("\\.tab$", files)]
   files <- paste0(dir, files)
-  
+
   ## Set column dtypes
   coltypes <- c('integer', rep('character', 5), 'integer', 'numeric'
                 , rep('character', 3), 'integer', 'integer'
                 , rep('character', 5), 'numeric', 'numeric')
-  
+
   ## Quick and dirty: fread all files
   read_one <- function(file){
     t <- tryCatch(fread(file, stringsAsFactors = F, sep = '\t'
@@ -46,13 +46,13 @@ ingest_icews <- function(dir){
   }
   message("Reading in files...")
   event_list  <- plyr::llply(files, read_one, .progress = plyr::progress_text(char = '='))
-  
+
   # Bind everything together
   events <- rbindlist(event_list)
-  
+
   # Set names
-  setnames(events, c("Event.ID", "Event.Date", "Source.Name", "Source.Sectors",
-                     "Source.Country", "Event.Text", "CAMEO.Code", "Intensity", "Target.Name",
+  setnames(events, c("event_id", "date", "Source.Name", "Source.Sectors",
+                     "Source.Country", "Event.Text", "eventcode", "Intensity", "Target.Name",
                      "Target.Sectors", "Target.Country", "Story.ID", "Sentence.Number",
                      "Publisher", "City", "District", "Province", "Country", "Latitude",
                      "Longitude"))
@@ -65,4 +65,3 @@ ingest_icews <- function(dir){
 }
 
 
-  

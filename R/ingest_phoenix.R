@@ -1,6 +1,6 @@
 #' Ingest the Phoenix Dataset
 #'
-#' Given a directory with individual Phoenix dataset files, quickly read 
+#' Given a directory with individual Phoenix dataset files, quickly read
 #' them all in, name them correctly, and combine them into one dataframe.
 #'
 #' @param dir The path to the Phoenix folder.
@@ -13,16 +13,16 @@
 #' @examples
 #'
 #' events <- ingest_phoenix("~/OEDA/phoxy_test/")
-#' 
+#'
 #' @rdname ingest_phoenix
 #' @export
-ingest_phoenix <- function(dir, phoenix_version = "auto", read_func = "read.csv", processing_function){  
+ingest_phoenix <- function(dir, phoenix_version = "auto", read_func = "read.csv", processing_function){
   # Handle messy file paths
   lastletter <- stringr::str_sub(dir ,-1, -1)
   if (lastletter != "/"){
     dir <- paste0(dir, "/")
   }
-  
+
   files <- list.files(dir)
   files <- paste0(dir, files)
 
@@ -37,18 +37,18 @@ ingest_phoenix <- function(dir, phoenix_version = "auto", read_func = "read.csv"
       message('object is not a data.frame')
     }
   }
-  
+
   message("Reading in files...")
   event_list  <- plyr::llply(files, read_one, .progress = plyr::progress_text(char = '='))
-  
+
   # Bind everything together
   events <- rbindlist(event_list)
-  setnames(events, c("EventID", "Date", "Year", "Month", "Day", "SourceActorFull", 
-                     "SourceActorEntity", "SourceActorRole", "SourceActorAttribute", 
-                     "TargetActorFull", "TargetActorEntity", "TargetActorRole", 
-                     "TargetActorAttribute", "EventCode", "EventRootCode", "PentaClass", 
-                     "GoldsteinScore", "Issues", "Lat", "Lon", 
-                     "LocationName", "StateName", "CountryCode", "SentenceID", "URLs", 
+  setnames(events, c("event_id", "date", "Year", "Month", "Day", "SourceActorFull",
+                     "sourceactorentity", "SourceActorRole", "SourceActorAttribute",
+                     "TargetActorFull", "targetactorentity", "TargetActorRole",
+                     "TargetActorAttribute", "eventcode", "rootcode", "pentaclass",
+                     "GoldsteinScore", "Issues", "Lat", "Lon",
+                     "LocationName", "StateName", "CountryCode", "SentenceID", "URLs",
                      "NewsSources"))
   events$Date <- as.Date(lubridate::ymd(events$Date))  # use lubridate, then de-POSIX the date.
   events$Year <- as.integer(events$Year)
@@ -57,11 +57,9 @@ ingest_phoenix <- function(dir, phoenix_version = "auto", read_func = "read.csv"
   events$GoldsteinScore <- as.numeric(events$GoldsteinScore)
   events$Lat <- as.numeric(events$Lat)
   events$Lon <- as.numeric(events$Lon)
-#   eventColClasses <- c(rep("integer", 5), rep("character", 11), "numeric", "character", "numeric", 
-#                        "numeric", rep("character", 6))
+
   message("Process complete")
   return(events)
 }
 
 
-  
