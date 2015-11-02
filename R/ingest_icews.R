@@ -63,18 +63,27 @@ ingest_icews <- function(dir, start_date, end_date){
   # Bind everything together
   events <- rbindlist(event_list)
 
-  # Set names
-  names(events) <- c("event_id", "date", "Source.Name", "Source.Sectors",
-                     "Source.Country", "Event.Text", "eventcode", "Intensity", "Target.Name",
-                     "Target.Sectors", "Target.Country", "Story.ID", "Sentence.Number",
-                     "Publisher", "City", "District", "Province", "Country", "Latitude",
-                     "Longitude")
-  
-  # Use lubridate, then de-POSIX the date.
-  events$date <- as.Date(lubridate::ymd(events$date))
-
-  message("Process complete")
-  return(events)
+  if(nrow(events) > 0){
+    # Set names
+    names(events) <- c("event_id", "date", "Source.Name", "Source.Sectors",
+                       "Source.Country", "Event.Text", "eventcode", "Intensity", "Target.Name",
+                       "Target.Sectors", "Target.Country", "Story.ID", "Sentence.Number",
+                       "Publisher", "City", "District", "Province", "Country", "Latitude",
+                       "Longitude")
+    # Use lubridate, then de-POSIX the date.
+    events$date <- as.Date(lubridate::ymd(events$date))
+    message("Process complete")
+    return(events)
+    
+  } else{
+    events <- data.table(date = structure(NA_real_, class="Date")
+                         , sourceactorentity = NA_character_
+                         , targetactorentity = NA_character_
+                         , rootcode = NA_integer_
+                         , eventcode = NA_integer_)
+    message("Process complete")
+    return(events)
+  }
 }
 
 

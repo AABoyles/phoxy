@@ -79,12 +79,15 @@ ingest_phoenix <- function(phoenix_loc, start_date, end_date){
     events$date <- as.Date(lubridate::ymd(events$date))  # use lubridate, then de-POSIX the date.
     message("Process complete")
     return(events)
+    
   } else{
     events <- data.table(date = structure(NA_real_, class="Date")
                          , sourceactorentity = NA_character_
                          , targetactorentity = NA_character_
                          , rootcode = NA_integer_
                          , eventcode = NA_integer_)
+    message("Process complete")
+    return(events)
   }
 }
 
