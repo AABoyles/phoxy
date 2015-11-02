@@ -74,10 +74,18 @@ ingest_phoenix <- function(phoenix_loc, start_date, end_date){
   ## Bind everything together
   events <- data.table::rbindlist(event_list)
   
-  ## Convert dates to DATE object
-  events$date <- as.Date(lubridate::ymd(events$date))  # use lubridate, then de-POSIX the date.
-  message("Process complete")
-  return(events)
+  if(nrow(events) > 0){
+    ## Convert dates to DATE object
+    events$date <- as.Date(lubridate::ymd(events$date))  # use lubridate, then de-POSIX the date.
+    message("Process complete")
+    return(events)
+  } else{
+    events <- data.table(date = structure(NA_real_, class="Date")
+                         , sourceactorentity = NA_character_
+                         , targetactorentity = NA_character_
+                         , rootcode = NA_integer_
+                         , eventcode = NA_integer_)
+  }
 }
 
 
