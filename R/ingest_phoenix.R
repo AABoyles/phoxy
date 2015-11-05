@@ -40,7 +40,7 @@ ingest_phoenix <- function(phoenix_loc, start_date, end_date){
   }
   files <- files[filesdates >= start_date & filesdates <= end_date]
   files <- paste0(phoenix_loc, files)
-  
+
   ## Set column dtypes
   coltypes <- c('character', rep('integer', 4), rep('character', 9)
                 , rep('integer', 2),  'numeric', 'character', 'numeric'
@@ -53,13 +53,14 @@ ingest_phoenix <- function(phoenix_loc, start_date, end_date){
                      , 'rootcode', 'pentaclass', 'goldsteinscore', 'issues'
                      , 'lat', 'long', 'locationname', 'statename', 'countrycode'
                      , 'sentenceid', 'urls', 'newssources')
-  
+
   ## Quick and dirty: fread all files
   read_one <- function(file){
     t <- tryCatch(data.table::fread(file, stringsAsFactors = F, sep = '\t'
                         , colClasses = coltypes
                         , na.strings = ''
-                        , col.names = phoenix_names)
+                        # , col.names = phoenix_names
+                        )
                   , error = function(e) message(paste0('error reading ', file)))
     if(is.null(t) == F){
       return(t)
@@ -73,13 +74,14 @@ ingest_phoenix <- function(phoenix_loc, start_date, end_date){
 
   ## Bind everything together
   events <- data.table::rbindlist(event_list)
-  
+  setnames(events, phoenix_names)
+
   if(nrow(events) > 0){
     ## Convert dates to DATE object
     events$date <- as.Date(lubridate::ymd(events$date))  # use lubridate, then de-POSIX the date.
     message("Process complete")
     return(events)
-    
+
   } else{
     events <- data.table(date = structure(NA_real_, class="Date")
                          , sourceactorentity = NA_character_
