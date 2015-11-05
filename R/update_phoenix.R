@@ -1,6 +1,6 @@
 #' Update a local directory of Phoenix dataset files with new files from the server
 #'
-#' Checks the contents of a directory containing Phoenix event data files, checks whether the 
+#' Checks the contents of a directory containing Phoenix event data files, checks whether the
 #' server has new events, and downloads them to that directory. (It'll have some version handling ability,
 #' too, either from the file names or by reading in the events.)
 #'
@@ -14,12 +14,11 @@
 #'
 #' update_phoenix("~/OEDA/phoxy_test/", phoenix_version = "current")
 
-#' 
+#' @import Rcurl
 #' @export
 update_phoenix <- function(destpath, phoenix_version = "current"){
-  library(RCurl)
   # pulls all the links from the OEDA Phoenix page
-  links <- phoxy:::get_links(phoenix_version = phoenix_version)  
+  links <- phoxy:::get_links(phoenix_version = phoenix_version)
   links_shortened <- as.data.frame(stringr::str_match(links, "events.full.(\\d+).txt"), stringsAsFactors=FALSE)
   filelist <- list.files(destpath)
   filelist_shortened <- as.data.frame(stringr::str_match(filelist, "events.full.(\\d+).txt"), stringsAsFactors=FALSE)
@@ -30,10 +29,10 @@ update_phoenix <- function(destpath, phoenix_version = "current"){
   }
   else{
     message("There are ", nrow(new_files), " undownloaded daily files. Downloading now...")
-    
+
     version_nodots <- gsub(".", "", phoenix_version, fixed=TRUE)
     ll <- paste0("https://s3.amazonaws.com/oeda/data/", version_nodots, "/", new_files$V1, ".zip")
-    
+
     message("Downloading and unzipping files.")
     plyr::l_ply(ll, phoxy:::dw_file, destpath = destpath, .progress = plyr::progress_text(char = '='))
   }
