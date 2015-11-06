@@ -50,17 +50,14 @@ ingest_phoenix <- function(phoenix_loc, start_date, end_date){
                      , 'sourceactorfull', 'sourceactorentity', 'sourceactorrole'
                      , 'sourceactorattribute', 'targetactorfull', 'targetactorentity'
                      , 'targetactorrole', 'targetactorattribute', 'eventcode'
-                     , 'rootcode', 'pentaclass', 'goldsteinscore', 'issues'
+                     , 'rootcode', 'pentaclass', 'goldstein', 'issues'
                      , 'lat', 'long', 'locationname', 'statename', 'countrycode'
                      , 'sentenceid', 'urls', 'newssources')
 
   ## Quick and dirty: fread all files
   read_one <- function(file){
     t <- tryCatch(data.table::fread(file, stringsAsFactors = F, sep = '\t'
-                        , colClasses = coltypes
-                        , na.strings = ''
-                        # , col.names = phoenix_names
-                        )
+                        , colClasses = coltypes, na.strings = '')
                   , error = function(e) message(paste0('error reading ', file)))
     if(is.null(t) == F){
       return(t)
@@ -74,7 +71,7 @@ ingest_phoenix <- function(phoenix_loc, start_date, end_date){
 
   ## Bind everything together
   events <- data.table::rbindlist(event_list)
-  setnames(events, phoenix_names)
+  data.table::setnames(events, phoenix_names)
 
   if(nrow(events) > 0){
     ## Convert dates to DATE object
@@ -87,7 +84,8 @@ ingest_phoenix <- function(phoenix_loc, start_date, end_date){
                          , sourceactorentity = NA_character_
                          , targetactorentity = NA_character_
                          , rootcode = NA_integer_
-                         , eventcode = NA_integer_)
+                         , eventcode = NA_integer_
+                         , goldstein = NA_real_)
     message("Process complete")
     return(events)
   }

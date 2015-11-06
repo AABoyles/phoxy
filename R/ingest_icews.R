@@ -66,7 +66,7 @@ ingest_icews <- function(dir, start_date, end_date){
   if(nrow(events) > 0){
     # Set names
     names(events) <- c("event_id", "date", "Source.Name", "Source.Sectors",
-                       "Source.Country", "Event.Text", "eventcode", "Intensity", "Target.Name",
+                       "Source.Country", "Event.Text", "eventcode", "goldstein", "Target.Name",
                        "Target.Sectors", "Target.Country", "Story.ID", "Sentence.Number",
                        "Publisher", "City", "District", "Province", "Country", "Latitude",
                        "Longitude")
@@ -80,7 +80,8 @@ ingest_icews <- function(dir, start_date, end_date){
                          , sourceactorentity = NA_character_
                          , targetactorentity = NA_character_
                          , rootcode = NA_integer_
-                         , eventcode = NA_integer_)
+                         , eventcode = NA_integer_
+                         , goldstein = NA_real_)
     message("Process complete")
     return(events)
   }
