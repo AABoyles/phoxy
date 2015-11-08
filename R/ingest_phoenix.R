@@ -42,8 +42,8 @@ ingest_phoenix <- function(phoenix_loc, start_date, end_date){
   files <- paste0(phoenix_loc, files)
 
   ## Set column dtypes
-  coltypes <- c('character', rep('integer', 4), rep('character', 9)
-                , rep('integer', 2),  'numeric', 'character', 'numeric'
+  coltypes <- c('character', rep('integer', 4), rep('character', 10)
+                , 'integer',  'numeric', 'character', 'numeric'
                 , 'numeric', rep('character', 6))
   ## Set column name
   phoenix_names <- c('eventid', 'date', 'year', 'month', 'day'
@@ -72,6 +72,10 @@ ingest_phoenix <- function(phoenix_loc, start_date, end_date){
   ## Bind everything together
   events <- data.table::rbindlist(event_list)
   data.table::setnames(events, phoenix_names)
+  
+  ## Convert codes to INTEGER type
+  suppressWarnings(events[, eventcode := as.integer(eventcode)])
+  suppressWarnings(events[, rootcode := as.integer(rootcode)])
 
   if(nrow(events) > 0){
     ## Convert dates to DATE object
