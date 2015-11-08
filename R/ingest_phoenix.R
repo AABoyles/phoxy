@@ -74,8 +74,8 @@ ingest_phoenix <- function(phoenix_loc, start_date, end_date){
   data.table::setnames(events, phoenix_names)
   
   ## Convert codes to INTEGER type
-  suppressWarnings(events$eventcode <- as.integer(eventcode))
-  suppressWarnings(events$rootcode <- as.integer(rootcode))
+  suppressWarnings(events$eventcode <- as.integer(events$eventcode))
+  suppressWarnings(events$rootcode <- as.integer(events$rootcode))
 
   if(nrow(events) > 0){
     ## Convert dates to DATE object
